@@ -93,15 +93,22 @@
   }
   button:hover:not(:disabled) { opacity: .9; }
   button:disabled { opacity: .55; cursor: not-allowed; }
+  .divider {
+    text-align: center;
+    margin: 25px 0;
+    color: #ff9800;
+    font-weight: bold;
+    font-size: clamp(22px, 2.5vw, 32px);
+  }
   .nowpayments-container { margin-top: 16px; text-align: center; }
   .nowpayments-btn {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
-    min-height: 90px;
-    padding: 20px;
-    font-size: clamp(24px, 2.5vw, 36px);
+    min-height: 100px;
+    padding: 24px;
+    font-size: clamp(24px, 2.5vw, 38px);
     font-weight: 900;
     text-transform: uppercase;
     text-decoration: none;
@@ -115,7 +122,7 @@
   }
   .nowpayments-btn:hover:not(:disabled) { transform: translateY(-2px); opacity: 0.95; }
   .nowpayments-btn:disabled { opacity: 0.55; cursor: not-allowed; }
-  .nowpayments-btn img { max-height: 40px; width: auto; display: inline-block; vertical-align: middle; }
+  .nowpayments-btn img { max-height: 45px; width: auto; display: inline-block; vertical-align: middle; }
   #status {
     margin-top: 24px;
     font-size: clamp(20px, 2.2vw, 32px);
@@ -186,15 +193,14 @@
   <span class="floating-emoji emoji-1">🙂</span> <span class="floating-emoji emoji-2">🍕</span> <span class="floating-emoji emoji-3">🪙</span> <span class="floating-emoji emoji-4">😃</span> <span class="floating-emoji emoji-5">💵</span>
 </div>
 
-<form class="container" id="purchaseForm" novalidate>
+<div class="container">
   <h1>🍕 PIZZA COIN PAY WITH CRYPTO 🍕</h1>
   <div class="instructions">
     <strong>How it works:</strong>
     <ol>
-      <li><strong>Enter your email:</strong> For electronic gift card delivery.</li>
+      <li><strong>Enter your email:</strong> For electronic gift card & token delivery records.</li>
       <li><strong>Enter your Polygon receive address:</strong> To receive your PZZC tokens.</li>
-      <li><strong>Select payment crypto:</strong> Choose your preferred asset on Polygon.</li>
-      <li><strong>Completion & Delivery:</strong> Instant verification and automated distribution.</li>
+      <li><strong>Select amount & crypto:</strong> Choose your purchase value and payment rail.</li>
     </ol>
   </div>
 
@@ -222,8 +228,12 @@
     <input type="number" id="pzzcAmount" name="pzzcAmount" value="200" min="0.001" step="0.001" autocomplete="off" inputmode="decimal" required>
   </div>
 
-  <button type="submit" id="payButton">Complete Purchase (Polygon Web3)</button>
+  <!-- BUTTON 1: Polygon Web3 Direct Checkout -->
+  <button type="button" id="payButton">Complete Purchase (Polygon Web3)</button>
 
+  <div class="divider">--- OR PAY WITH ANY OTHER CRYPTO (BTC, ETH, LTC, etc.) ---</div>
+
+  <!-- BUTTON 2: NOWPayments Dynamic Invoice Checkout -->
   <div class="nowpayments-container">
     <button type="button" id="nowPaymentsBtn" class="nowpayments-btn" onclick="createDynamicNowPaymentsInvoice()">
       <span>PAY WITH BTC OR ANY CRYPTO &nbsp;</span>
@@ -238,7 +248,7 @@
     <br><br>
     <strong>Thank you, Pizza Coin 💵🍕😃</strong>
   </div>
-</form>
+</div>
 <br>
 
 <script type="module">
@@ -252,7 +262,6 @@ const BACKEND_URL = "https://pizza-backend-8if7.onrender.com/api/verify-usdc-ord
 
 const ERC20_ABI = ["function transfer(address to, uint256 value) public returns (bool)"];
 
-const purchaseForm = document.getElementById("purchaseForm");
 const payButton = document.getElementById("payButton");
 const statusDiv = document.getElementById("status");
 
@@ -298,9 +307,7 @@ async function ensurePolygon(provider) {
   return true;
 }
 
-purchaseForm.addEventListener("submit", async function (event) {
-    event.preventDefault();
-
+payButton.addEventListener("click", async function () {
     const email = document.getElementById("email").value.trim();
     const polyAddr = document.getElementById("polygonAddress").value.trim();
     const cryptoSelect = document.getElementById("cryptoSelect").value;
@@ -349,7 +356,11 @@ purchaseForm.addEventListener("submit", async function (event) {
       await provider.send("eth_requestAccounts", []);
 
       const polygonReady = await ensurePolygon(provider);
-      if (!polygonReady) return;
+      if (!polygonReady) {
+        payButton.disabled = false;
+        payButton.textContent = "Complete Purchase (Polygon Web3)";
+        return;
+      }
 
       const signer = await provider.getSigner();
       const usdcContract = new ethers.Contract(USDC_ADDRESS, ERC20_ABI, signer);
@@ -405,8 +416,22 @@ purchaseForm.addEventListener("submit", async function (event) {
 
 <script>
 async function createDynamicNowPaymentsInvoice() {
+    const emailVal = document.getElementById('email').value.trim();
+    const polyAddrVal = document.getElementById('polygonAddress').value.trim();
     const amountVal = document.getElementById('pzzcAmount').value.trim();
     const nowPayBtn = document.getElementById('nowPaymentsBtn');
+
+    if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+        setStatus("Please enter a valid email address for NOWPayments order tracking.", "error");
+        document.getElementById('email').focus();
+        return;
+    }
+
+    if (!polyAddrVal || !polyAddrVal.startsWith("0x")) {
+        setStatus("Please enter a valid Polygon receive address for token delivery.", "error");
+        document.getElementById('polygonAddress').focus();
+        return;
+    }
 
     if (!amountVal || isNaN(amountVal) || parseFloat(amountVal) <= 0) {
         setStatus("Please enter a valid purchase amount before paying with NOWPayments.", "error");
@@ -428,7 +453,7 @@ async function createDynamicNowPaymentsInvoice() {
                 price_amount: parseFloat(amountVal),
                 price_currency: 'usd',
                 order_id: 'PIZZA-' + Math.floor(Math.random() * 10000000),
-                order_description: 'Pizza Coin Payment - Amount: ' + amountVal + ' USD',
+                order_description: `Pizza Coin Purchase - ${amountVal} USD for ${polyAddrVal} (${emailVal})`,
                 success_url: window.location.href,
                 cancel_url: window.location.href
             })
