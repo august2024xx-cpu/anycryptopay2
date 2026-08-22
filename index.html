@@ -14,7 +14,7 @@
     style-src 'self' 'unsafe-inline';
     img-src 'self' data: https://nowpayments.io;
     font-src 'self';">
-<title>Pizza Coin Pay With Crypto</title>
+<title>Pizza Coin Payment</title>
 <style>
   * { box-sizing: border-box; }
   body {
@@ -66,9 +66,9 @@
   }
   input, select {
     width: 100%;
-    min-height: 110px;
-    padding: 20px 28px;
-    font-size: clamp(34px, 4vw, 58px);
+    min-height: 90px;
+    padding: 18px 24px;
+    font-size: clamp(28px, 3.5vw, 48px);
     line-height: 1.15;
     background: #222;
     border: 3px solid #39ff14;
@@ -77,7 +77,6 @@
     box-sizing: border-box;
   }
   input:focus, select:focus { outline: none; border-color: #39ff14; }
-  input:invalid:not(:placeholder-shown) { border-color: #aa3333; }
   button {
     width: 100%;
     min-height: 100px;
@@ -123,7 +122,7 @@
   .nowpayments-btn:hover:not(:disabled) { transform: translateY(-2px); opacity: 0.95; }
   .nowpayments-btn:disabled { opacity: 0.55; cursor: not-allowed; }
   .nowpayments-btn img { max-height: 45px; width: auto; display: inline-block; vertical-align: middle; }
-  #status {
+  #status, #error-msg {
     margin-top: 24px;
     font-size: clamp(20px, 2.2vw, 32px);
     text-align: center;
@@ -132,7 +131,7 @@
     min-height: 36px;
   }
   .success { color: #00ff00; font-weight: bold; }
-  .error { color: #ff4444; font-weight: bold; }
+  .error, #error-msg { color: #ff4444; font-weight: bold; }
   .warning { color: #ffcc00; font-weight: bold; }
   .info { color: #66ccff; font-weight: bold; }
   .footer-text { text-align: center; margin-top: 24px; font-size: 18px; color: #bbb; font-style: italic; }
@@ -178,7 +177,7 @@
   @media (max-width: 700px) {
     body { padding: 8px; }
     .container { width: 84%; max-width: none; padding: 22px 18px 30px; }
-    input, select { min-height: 96px; padding: 18px 20px; font-size: 32px; }
+    input, select { min-height: 80px; padding: 14px 18px; font-size: 28px; }
     label { font-size: 22px; }
   }
 </style>
@@ -194,54 +193,66 @@
 </div>
 
 <div class="container">
-  <h1>🍕 PIZZA COIN PAY WITH CRYPTO 🍕</h1>
+  <h1>🍕 PIZZA COIN CHECKOUT 🍕</h1>
   <div class="instructions">
     <strong>How it works:</strong>
     <ol>
-      <li><strong>Enter your email:</strong> For electronic gift card & token delivery records.</li>
+      <li><strong>Enter your email:</strong> For electronic receipt & token delivery records.</li>
       <li><strong>Enter your Polygon receive address:</strong> To receive your PZZC tokens.</li>
-      <li><strong>Select amount & crypto:</strong> Choose your purchase value and payment rail.</li>
+      <li><strong>Select amount & currency:</strong> Choose from the tiered dropdown or type a custom amount.</li>
     </ol>
   </div>
 
   <div class="form-group">
-    <label for="email">1. Enter Email</label>
+    <label for="email">Enter Email:</label>
     <input type="email" id="email" name="email" placeholder="buyer@example.com" autocomplete="email" inputmode="email" required>
   </div>
 
   <div class="form-group">
-    <label for="polygonAddress">2. Enter Your Polygon Receive Address</label>
+    <label for="polygonAddress">Enter Your Polygon Receive Address:</label>
     <input type="text" id="polygonAddress" name="polygonAddress" placeholder="0x..." autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" required>
   </div>
 
+  <!-- Option 1: Dropdown Selection -->
   <div class="form-group">
-    <label for="cryptoSelect">3. Select Payment Crypto on Polygon</label>
-    <select id="cryptoSelect" name="cryptoSelect" autocomplete="off" required>
-      <option value="USDC">USDC (Polygon)</option>
-      <option value="USDT">USDT (Polygon)</option>
-      <option value="MATIC">MATIC (Polygon)</option>
+    <label for="preset-select">Select Amount:</label>
+    <select id="preset-select" onchange="handleDropdownChange()">
+      <option value="" disabled selected>-- Choose an amount --</option>
     </select>
   </div>
 
+  <div class="divider">OR</div>
+
+  <!-- Option 2: Custom Amount Field (Starts Blank) -->
   <div class="form-group">
-    <label for="pzzcAmount">Purchase Amount (USD Value)</label>
-    <input type="number" id="pzzcAmount" name="pzzcAmount" value="200" min="0.001" step="0.001" autocomplete="off" inputmode="decimal" required>
+    <label for="custom-amount">Type Custom Amount:</label>
+    <input type="number" id="custom-amount" placeholder="e.g. 35.50" step="0.01" min="1" oninput="handleCustomInput()">
+  </div>
+
+  <div class="form-group">
+    <label for="currency-select">Currency:</label>
+    <select id="currency-select">
+      <option value="usd">USD</option>
+      <option value="eur">EUR</option>
+      <option value="usdt">USDT</option>
+    </select>
   </div>
 
   <!-- BUTTON 1: Polygon Web3 Direct Checkout -->
   <button type="button" id="payButton">Complete Purchase (Polygon Web3)</button>
 
-  <div class="divider">--- OR PAY WITH ANY OTHER CRYPTO (BTC, ETH, LTC, etc.) ---</div>
+  <div class="divider">--- OR PAY WITH ANY OTHER CRYPTO (NOWPayments) ---</div>
 
   <!-- BUTTON 2: NOWPayments Dynamic Invoice Checkout -->
   <div class="nowpayments-container">
-    <button type="button" id="nowPaymentsBtn" class="nowpayments-btn" onclick="createDynamicNowPaymentsInvoice()">
-      <span>PAY WITH BTC OR ANY CRYPTO &nbsp;</span>
+    <button type="button" id="pay-btn" class="nowpayments-btn" onclick="createDynamicPayment()">
+      <span>Pay with Crypto &nbsp;</span>
       <img src="https://nowpayments.io/images/embeds/payments-button-black.svg" alt="Crypto payment button by NOWPayments">
     </button>
   </div>
 
-  <div id="status" role="status" aria-live="polite">Ready to Connect</div>
+  <div id="error-msg"></div>
+  <div id="status" role="status" aria-live="polite"></div>
 
   <div class="footer-text">
     Return and purchase as much as you like as often as you like!
@@ -251,6 +262,7 @@
 </div>
 <br>
 
+<!-- POLYGON WEB3 CHECKOUT SCRIPT -->
 <script type="module">
 import { ethers } from "https://esm.sh/ethers@6.7.0";
 
@@ -278,16 +290,9 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-function isValidPurchaseAmount(amount) {
-  const numericAmount = Number(amount);
-  return Number.isFinite(numericAmount) && numericAmount >= 0.001;
-}
-
 async function ensurePolygon(provider) {
   const network = await provider.getNetwork();
-  if (network.chainId === POLYGON_CHAIN_ID) {
-    return true;
-  }
+  if (network.chainId === POLYGON_CHAIN_ID) return true;
   setStatus("Switching wallet to Polygon...", "info");
   try {
     await window.ethereum.request({
@@ -295,23 +300,21 @@ async function ensurePolygon(provider) {
       params: [{ chainId: POLYGON_CHAIN_HEX }]
     });
   } catch (switchError) {
-    console.error("Polygon network switch failed:", switchError);
     setStatus("Please switch your wallet to Polygon and try again.", "error");
     return false;
   }
   const updatedNetwork = await provider.getNetwork();
-  if (updatedNetwork.chainId !== POLYGON_CHAIN_ID) {
-    setStatus("Wallet is not connected to Polygon.", "error");
-    return false;
-  }
-  return true;
+  return updatedNetwork.chainId === POLYGON_CHAIN_ID;
 }
 
 payButton.addEventListener("click", async function () {
     const email = document.getElementById("email").value.trim();
     const polyAddr = document.getElementById("polygonAddress").value.trim();
-    const cryptoSelect = document.getElementById("cryptoSelect").value;
-    const amount = document.getElementById("pzzcAmount").value.trim();
+    
+    // Get amount from either custom input or dropdown
+    const dropdownVal = document.getElementById('preset-select').value;
+    const customVal = document.getElementById('custom-amount').value.trim();
+    let amount = customVal !== "" ? customVal : dropdownVal;
 
     if (!isValidEmail(email)) {
       setStatus("Please enter a valid email address.", "error");
@@ -325,38 +328,26 @@ payButton.addEventListener("click", async function () {
       return;
     }
 
-    if (!isValidPurchaseAmount(amount)) {
-      setStatus("Purchase amount must be at least 0.001.", "error");
-      document.getElementById("pzzcAmount").focus();
+    if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+      setStatus("Please select an amount from the dropdown or type a valid custom amount.", "error");
       return;
     }
 
-    if (cryptoSelect !== "USDC") {
-      setStatus("This checkout currently supports USDC (Polygon) only. Please select USDC.", "warning");
-      document.getElementById("cryptoSelect").value = "USDC";
-      return;
-    }
-
-    let web3ProviderSource = window.ethereum;
-    if (!web3ProviderSource && window.coinbaseWalletExtension) {
-      web3ProviderSource = window.coinbaseWalletExtension;
-    }
-
+    let web3ProviderSource = window.ethereum || window.coinbaseWalletExtension;
     if (!web3ProviderSource) {
-      setStatus("No Web3 wallet detected. Please open in MetaMask or a Web3 browser extension.", "error");
+      setStatus("No Web3 wallet detected. Please open in MetaMask or a Web3 browser.", "error");
       return;
     }
 
     payButton.disabled = true;
-    payButton.textContent = "Processing...";
+    payButton.textContent = "Processing Web3 Payment...";
 
     try {
       setStatus("Requesting wallet connection...", "info");
       const provider = new ethers.BrowserProvider(web3ProviderSource);
       await provider.send("eth_requestAccounts", []);
 
-      const polygonReady = await ensurePolygon(provider);
-      if (!polygonReady) {
+      if (!(await ensurePolygon(provider))) {
         payButton.disabled = false;
         payButton.textContent = "Complete Purchase (Polygon Web3)";
         return;
@@ -367,17 +358,13 @@ payButton.addEventListener("click", async function () {
       const parsedAmount = ethers.parseUnits(amount, 6);
 
       setStatus(`Preparing payment...<br>Amount: ${amount} USDC`, "info");
-
       const tx = await usdcContract.transfer(MERCHANT_WALLET, parsedAmount);
 
-      setStatus(`Transaction broadcasted. Waiting for Polygon confirmation...<br><small>${tx.hash}</small>`, "info");
-
+      setStatus(`Transaction broadcasted. Waiting for confirmation...<br><small>${tx.hash}</small>`, "info");
       const receipt = await tx.wait();
-      if (!receipt || receipt.status !== 1) {
-        throw new Error("The USDC transaction was not successfully confirmed.");
-      }
+      if (!receipt || receipt.status !== 1) throw new Error("Transaction failed.");
 
-      setStatus(`✅ USDC Payment Confirmed! Verifying with server...<br><small>${tx.hash}</small>`, "success");
+      setStatus(`✅ USDC Payment Confirmed! Verifying with server...`, "success");
 
       const response = await fetch(BACKEND_URL, {
         method: "POST",
@@ -386,7 +373,7 @@ payButton.addEventListener("click", async function () {
           email: email,
           polygonAddress: polyAddr,
           pzzcAmount: amount,
-          paymentCrypto: cryptoSelect,
+          paymentCrypto: "USDC",
           txHash: tx.hash
         })
       });
@@ -399,14 +386,8 @@ payButton.addEventListener("click", async function () {
       setStatus(`✅ Success! PZZC distributed and confirmation emails sent.<br><small>TX: ${tx.hash}</small>`, "success");
 
     } catch (err) {
-      console.error("Purchase error:", err);
-      let message = "Transaction cancelled or failed.";
-      if (err && err.code === "ACTION_REJECTED") {
-        message = "Transaction was rejected in your wallet.";
-      } else if (err && err.message) {
-        message = err.message;
-      }
-      setStatus(`❌ ${message}`, "error");
+      console.error(err);
+      setStatus(`❌ ${err.message || "Transaction cancelled or failed."}`, "error");
     } finally {
       payButton.disabled = false;
       payButton.textContent = "Complete Purchase (Polygon Web3)";
@@ -414,33 +395,78 @@ payButton.addEventListener("click", async function () {
 });
 </script>
 
+<!-- NOWPAYMENTS & DROPDOWN SCRIPT -->
 <script>
-async function createDynamicNowPaymentsInvoice() {
+window.onload = function() {
+    const select = document.getElementById('preset-select');
+    
+    // 1. Starts at 1, 5, 10, 20
+    [1, 5, 10, 20].forEach(val => addOption(select, val));
+
+    // 2. Multiples of 20 up to 1000
+    for (let i = 40; i <= 1000; i += 20) { addOption(select, i); }
+
+    // 3. Increases by 1000 up to 100,000
+    for (let i = 2000; i <= 100000; i += 1000) { addOption(select, i); }
+
+    // 4. Increases by 100,000 up to 1,000,000
+    for (let i = 200000; i <= 1000000; i += 100000) { addOption(select, i); }
+};
+
+function addOption(selectElement, value) {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = value >= 1000 ? value.toLocaleString() : value;
+    selectElement.appendChild(option);
+}
+
+// Clear custom input when dropdown is changed
+function handleDropdownChange() {
+    document.getElementById('custom-amount').value = '';
+}
+
+// Reset dropdown selection when typing manually
+function handleCustomInput() {
+    document.getElementById('preset-select').selectedIndex = 0;
+}
+
+async function createDynamicPayment() {
     const emailVal = document.getElementById('email').value.trim();
     const polyAddrVal = document.getElementById('polygonAddress').value.trim();
-    const amountVal = document.getElementById('pzzcAmount').value.trim();
-    const nowPayBtn = document.getElementById('nowPaymentsBtn');
+    const dropdownVal = document.getElementById('preset-select').value;
+    const customVal = document.getElementById('custom-amount').value.trim();
+    const currency = document.getElementById('currency-select').value;
+    const errorDiv = document.getElementById('error-msg');
+    const payBtn = document.getElementById('pay-btn');
+
+    errorDiv.textContent = "";
 
     if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
-        setStatus("Please enter a valid email address for NOWPayments order tracking.", "error");
+        errorDiv.textContent = "Please enter a valid email address.";
         document.getElementById('email').focus();
         return;
     }
 
     if (!polyAddrVal || !polyAddrVal.startsWith("0x")) {
-        setStatus("Please enter a valid Polygon receive address for token delivery.", "error");
+        errorDiv.textContent = "Please enter a valid Polygon receive address.";
         document.getElementById('polygonAddress').focus();
         return;
     }
 
-    if (!amountVal || isNaN(amountVal) || parseFloat(amountVal) <= 0) {
-        setStatus("Please enter a valid purchase amount before paying with NOWPayments.", "error");
-        document.getElementById('pzzcAmount').focus();
+    let finalAmount = "";
+    if (customVal !== "" && !isNaN(customVal) && parseFloat(customVal) > 0) {
+        finalAmount = parseFloat(customVal);
+    } else if (dropdownVal !== "" && !isNaN(dropdownVal) && parseFloat(dropdownVal) > 0) {
+        finalAmount = parseFloat(dropdownVal);
+    }
+
+    if (!finalAmount || finalAmount <= 0) {
+        errorDiv.textContent = "Please select an amount from the dropdown or type a valid custom amount.";
         return;
     }
 
-    nowPayBtn.disabled = true;
-    setStatus("Generating NOWPayments crypto invoice...", "info");
+    payBtn.disabled = true;
+    payBtn.textContent = "Generating invoice...";
 
     try {
         const response = await fetch('https://api.nowpayments.io/v1/invoice', {
@@ -450,10 +476,10 @@ async function createDynamicNowPaymentsInvoice() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                price_amount: parseFloat(amountVal),
-                price_currency: 'usd',
+                price_amount: finalAmount,
+                price_currency: currency,
                 order_id: 'PIZZA-' + Math.floor(Math.random() * 10000000),
-                order_description: `Pizza Coin Purchase - ${amountVal} USD for ${polyAddrVal} (${emailVal})`,
+                order_description: `Pizza Coin Payment - ${finalAmount} ${currency.toUpperCase()} (${polyAddrVal}) [${emailVal}]`,
                 success_url: window.location.href,
                 cancel_url: window.location.href
             })
@@ -464,17 +490,17 @@ async function createDynamicNowPaymentsInvoice() {
         if (data && data.invoice_url) {
             window.location.href = data.invoice_url;
         } else {
-            setStatus(data.message || "Failed to generate NOWPayments invoice. Check amount limits.", "error");
-            nowPayBtn.disabled = false;
+            errorDiv.textContent = data.message || "Failed to generate invoice. Please verify amount limits.";
+            payBtn.disabled = false;
+            payBtn.textContent = "Pay with Crypto";
         }
     } catch (err) {
         console.error(err);
-        setStatus("Network error connecting to NOWPayments API.", "error");
-        nowPayBtn.disabled = false;
+        errorDiv.textContent = "Network error. Please try again later.";
+        payBtn.disabled = false;
+        payBtn.textContent = "Pay with Crypto";
     }
 }
-
-setStatus("Ready to Connect", "");
 </script>
 </body>
 </html>
