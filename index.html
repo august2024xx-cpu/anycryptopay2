@@ -1,132 +1,406 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pizza Coin Checkout</title>
-    <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; padding: 20px; background: #000; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; font-family: Arial, sans-serif; color: white; }
-        .container { width: 100%; max-width: 600px; background: #111; padding: 30px; border-radius: 20px; border: 1px solid #333; }
-        h1 { text-align: center; color: #39ff14; font-size: 28px; margin-bottom: 20px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; color: #fff; }
-        input, select { width: 100%; padding: 14px; font-size: 18px; background: #222; border: 2px solid #39ff14; color: white; border-radius: 10px; }
-        button { width: 100%; padding: 16px; font-size: 18px; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; margin-top: 10px; }
-        .btn-web3 { background: #39ff14; color: #000; }
-        .btn-nowpayments { background: linear-gradient(135deg, #f7931a, #ffb84d); color: #000; }
-        button:hover { opacity: 0.9; }
-        .divider { text-align: center; margin: 20px 0; color: #ff9800; font-weight: bold; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    connect-src 'self' 
+      https://pizza-backend-8if7.onrender.com 
+      https://polygon-bor-rpc.publicnode.com 
+      https://*.publicnode.com;
+    script-src 'self' 'unsafe-inline' https://esm.sh;
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: https://nowpayments.io;
+    font-src 'self';">
+<title>Pizza Coin Pay With Crypto</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 12px;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    color: white;
+  }
+  .container {
+    width: calc(98vw - 10cm);
+    max-width: 1600px;
+    background: #111;
+    padding: 30px 40px 40px;
+    border-radius: 20px;
+    border: 1px solid #333;
+    position: relative;
+    z-index: 2;
+  }
+  h1 {
+    font-size: clamp(32px, 4vw, 56px);
+    text-align: center;
+    margin: 0 0 18px;
+    color: #39ff14;
+  }
+  .instructions {
+    background: #222;
+    padding: 18px 22px;
+    border-radius: 10px;
+    margin-bottom: 24px;
+    font-size: 18px;
+    line-height: 1.6;
+    color: #ddd;
+    border-left: 6px solid #ff9800;
+  }
+  .instructions ol { margin: 0; padding-left: 20px; }
+  .instructions li { margin-bottom: 8px; }
+  .form-group { margin-bottom: 24px; }
+  label {
+    display: block;
+    font-size: clamp(22px, 2.2vw, 34px);
+    margin-bottom: 10px;
+    color: #fff;
+    font-weight: bold;
+  }
+  input, select {
+    width: 100%;
+    min-height: 110px;
+    padding: 20px 28px;
+    font-size: clamp(34px, 4vw, 58px);
+    line-height: 1.15;
+    background: #222;
+    border: 3px solid #39ff14;
+    color: white;
+    border-radius: 18px;
+    box-sizing: border-box;
+  }
+  input:focus, select:focus { outline: none; border-color: #39ff14; }
+  input:invalid:not(:placeholder-shown) { border-color: #aa3333; }
+  button {
+    width: 100%;
+    min-height: 100px;
+    padding: 24px;
+    font-size: clamp(28px, 3vw, 44px);
+    font-weight: bold;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    background: #39ff14;
+    color: white;
+    margin-top: 12px;
+  }
+  button:hover:not(:disabled) { opacity: .9; }
+  button:disabled { opacity: .55; cursor: not-allowed; }
+  .nowpayments-container { margin-top: 16px; text-align: center; }
+  .nowpayments-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 90px;
+    padding: 20px;
+    font-size: clamp(24px, 2.5vw, 36px);
+    font-weight: 900;
+    text-transform: uppercase;
+    text-decoration: none;
+    background: linear-gradient(135deg, #f7931a, #ffb84d);
+    color: #000;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(247, 147, 26, 0.4);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+  .nowpayments-btn:hover { transform: translateY(-2px); opacity: 0.95; }
+  .nowpayments-btn img { max-height: 40px; width: auto; display: inline-block; vertical-align: middle; }
+  #status {
+    margin-top: 24px;
+    font-size: clamp(20px, 2.2vw, 32px);
+    text-align: center;
+    word-break: break-word;
+    line-height: 1.5;
+    min-height: 36px;
+  }
+  .success { color: #00ff00; font-weight: bold; }
+  .error { color: #ff4444; font-weight: bold; }
+  .warning { color: #ffcc00; font-weight: bold; }
+  .info { color: #66ccff; font-weight: bold; }
+  .footer-text { text-align: center; margin-top: 24px; font-size: 18px; color: #bbb; font-style: italic; }
+  
+  /* FLOATING EMOJIS */
+  .emoji-zone {
+    position: fixed; top: 0; bottom: 0; width: 13vw; min-width: 75px; max-width: 190px;
+    pointer-events: none; z-index: 1; overflow: hidden;
+  }
+  .emoji-zone.left { left: 0; }
+  .emoji-zone.right { right: 0; }
+  .floating-emoji {
+    position: absolute; display: block; user-select: none; pointer-events: none;
+    will-change: transform; filter: drop-shadow(0 0 4px rgba(57, 255, 20, .35));
+  }
+  .left .emoji-1 { font-size: 70px; left: 8%; top: 10%; animation: bounceLeft1 6.5s ease-in-out infinite alternate; }
+  .left .emoji-2 { font-size: 42px; left: 52%; top: 27%; animation: bounceLeft2 4.7s ease-in-out infinite alternate; }
+  .left .emoji-3 { font-size: 92px; left: 12%; top: 47%; animation: bounceLeft3 7.2s ease-in-out infinite alternate; }
+  .left .emoji-4 { font-size: 54px; left: 55%; top: 67%; animation: bounceLeft4 5.4s ease-in-out infinite alternate; }
+  .left .emoji-5 { font-size: 32px; left: 20%; top: 84%; animation: bounceLeft5 3.9s ease-in-out infinite alternate; }
+  .right .emoji-1 { font-size: 48px; right: 10%; top: 8%; animation: bounceRight1 5.2s ease-in-out infinite alternate; }
+  .right .emoji-2 { font-size: 88px; right: 45%; top: 23%; animation: bounceRight2 7s ease-in-out infinite alternate; }
+  .right .emoji-3 { font-size: 38px; right: 12%; top: 43%; animation: bounceRight3 4.2s ease-in-out infinite alternate; }
+  .right .emoji-4 { font-size: 68px; right: 48%; top: 61%; animation: bounceRight4 6.1s ease-in-out infinite alternate; }
+  .right .emoji-5 { font-size: 30px; right: 18%; top: 82%; animation: bounceRight5 3.7s ease-in-out infinite alternate; }
+
+  @keyframes bounceLeft1 { 0% { transform: translate(0, 0) rotate(-12deg); } 100% { transform: translate(15px, 285px) rotate(-15deg); } }
+  @keyframes bounceLeft2 { 0% { transform: translate(0, 0) rotate(10deg); } 100% { transform: translate(-20px, 205px) rotate(-10deg); } }
+  @keyframes bounceLeft3 { 0% { transform: translate(0, 0) rotate(8deg); } 100% { transform: translate(5px, -235px) rotate(15deg); } }
+  @keyframes bounceLeft4 { 0% { transform: translate(0, 0) rotate(-8deg); } 100% { transform: translate(-10px, 175px) rotate(10deg); } }
+  @keyframes bounceLeft5 { 0% { transform: translate(0, 0); } 100% { transform: translate(-20px, -110px) rotate(-15deg); } }
+  @keyframes bounceRight1 { 0% { transform: translate(0, 0) rotate(12deg); } 100% { transform: translate(-15px, 275px) rotate(12deg); } }
+  @keyframes bounceRight2 { 0% { transform: translate(0, 0) rotate(-10deg); } 100% { transform: translate(20px, 210px) rotate(15deg); } }
+  @keyframes bounceRight3 { 0% { transform: translate(0, 0) rotate(8deg); } 100% { transform: translate(10px, -225px) rotate(18deg); } }
+  @keyframes bounceRight4 { 0% { transform: translate(0, 0) rotate(-12deg); } 100% { transform: translate(15px, 180px) rotate(10deg); } }
+  @keyframes bounceRight5 { 0% { transform: translate(0, 0); } 100% { transform: translate(20px, -115px) rotate(15deg); } }
+
+  @media (max-width: 900px) {    .emoji-zone { width: 8vw; min-width: 45px; opacity: .55; }  }
+  @media (max-width: 700px) {
+    body { padding: 8px; }
+    .container { width: 84%; max-width: none; padding: 22px 18px 30px; }
+    input, select { min-height: 96px; padding: 18px 20px; font-size: 32px; }
+    label { font-size: 22px; }
+  }
+</style>
 </head>
 <body>
 
-<div class="container">
-    <h1>🍕 PIZZA COIN CHECKOUT 🍕</h1>
-    
-    <div class="form-group">
-        <label for="buyerEmail">Your Email Address:</label>
-        <input type="email" id="buyerEmail" placeholder="you@example.com" required>
-    </div>
-
-    <div class="form-group">
-        <label for="polygonAddress">Your Polygon Wallet Address:</label>
-        <input type="text" id="polygonAddress" placeholder="0x..." required>
-    </div>
-
-    <div class="form-group">
-        <label for="pzzcAmount">Amount (USD / PZZC):</label>
-        <input type="number" id="pzzcAmount" value="10" min="1" step="0.01" required>
-    </div>
-
-    <!-- Option 1: Direct Web3 USDC Payment -->
-    <button class="btn-web3" onclick="payWithDirectWeb3()">Complete Purchase (Polygon Web3)</button>
-
-    <div class="divider">--- OR ---</div>
-
-    <!-- Option 2: NOWPayments Gateway -->
-    <button class="btn-nowpayments" onclick="payWithNowPayments()">Pay with Crypto (NOWPayments)</button>
+<div class="emoji-zone left" aria-hidden="true">
+  <span class="floating-emoji emoji-1">🍕</span> 
+  <span class="floating-emoji emoji-2">😃</span> 
+  <span class="floating-emoji emoji-3">💵</span> 
+  <span class="floating-emoji emoji-4">🪙</span> 
+  <span class="floating-emoji emoji-5">🙂</span>
+</div>
+<div class="emoji-zone right" aria-hidden="true">
+  <span class="floating-emoji emoji-1">🙂</span> 
+  <span class="floating-emoji emoji-2">🍕</span> 
+  <span class="floating-emoji emoji-3">🪙</span> 
+  <span class="floating-emoji emoji-4">😃</span> 
+  <span class="floating-emoji emoji-5">💵</span>
 </div>
 
-<!-- Ethers.js CDN -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+<form class="container" id="purchaseForm" novalidate>
+  <h1>🍕 PIZZA COIN PAY WITH CRYPTO 🍕</h1>
+  
+  <div class="instructions">
+    <strong>How it works:</strong>
+    <ol>
+      <li><strong>Enter your email:</strong> For electronic pizza gift card delivery.</li>
+      <li><strong>Enter your Polygon receive address:</strong> To receive your PZZC tokens.</li>
+      <li><strong>Select payment crypto:</strong> Choose your preferred asset on Polygon.</li>
+      <li><strong>Completion & Delivery:</strong> Instant verification and automated distribution.</li>
+    </ol>
+  </div>
 
-<script>
-    const BACKEND_URL = "https://pizza-backend-8if7.onrender.com";
-    const MERCHANT_WALLET = "0x9e63CDc3D66714f0FCe5B3347139E117a04A75b3";
-    const USDC_POLYGON = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174";
+  <div class="form-group">
+    <label for="email">1. Enter Email</label>
+    <input type="email" id="email" name="email" placeholder="buyer@example.com" autocomplete="email" inputmode="email" required>
+  </div>
 
-    async function payWithDirectWeb3() {
-        const email = document.getElementById("buyerEmail").value.trim();
-        const polygonAddress = document.getElementById("polygonAddress").value.trim();
-        const amount = document.getElementById("pzzcAmount").value.trim();
+  <div class="form-group">
+    <label for="polygonAddress">2. Enter Your Polygon Receive Address</label>
+    <input type="text" id="polygonAddress" name="polygonAddress" placeholder="0x..." autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" required>
+  </div>
 
-        if (!email || !polygonAddress || !amount) {
-            alert("Please fill in all fields.");
-            return;
-        }
+  <div class="form-group">
+    <label for="cryptoSelect">3. Select Payment Crypto on Polygon</label>
+    <select id="cryptoSelect" name="cryptoSelect" autocomplete="off" required>
+      <option value="USDC">USDC (Polygon)</option>
+      <option value="USDT">USDT (Polygon)</option>
+      <option value="MATIC">MATIC (Polygon)</option>
+    </select>
+  </div>
 
-        if (!window.ethereum) {
-            alert("Please open this page in MetaMask or a Web3 browser.");
-            return;
-        }
+  <div class="form-group">
+    <label for="pzzcAmount">Purchase Amount (PZZC = 1:1 USDC Value)</label>
+    <input type="number" id="pzzcAmount" name="pzzcAmount" value="0.001" min="0.001" step="0.001" autocomplete="off" inputmode="decimal" required>
+  </div>
 
-        try {
-            await window.ethereum.request({ method: "eth_requestAccounts" });
-            const provider = new ethers.BrowserProvider(window.ethereum);
-            const signer = await provider.getSigner();
+  <button type="submit" id="payButton">Complete Purchase</button>
 
-            alert("Please approve the USDC transfer in your wallet...");
+  <div class="nowpayments-container">
+    <a href="https://nowpayments.io/payment/?iid=4955690167&source=button" class="nowpayments-btn" target="_blank" rel="noreferrer noopener">
+      <span>PAY WITH BTC OR ANY CRYPTO &nbsp;</span>
+      <img src="https://nowpayments.io/images/embeds/payments-button-black.svg" alt="Crypto payment button by NOWPayments">
+    </a>
+  </div>
 
-            const erc20Abi = ["function transfer(address to, uint256 value) returns (bool)"];
-            const usdcContract = new ethers.Contract(USDC_POLYGON, erc20Abi, signer);
-            
-            const parsedAmount = ethers.parseUnits(amount, 6);
-            const tx = await usdcContract.transfer(MERCHANT_WALLET, parsedAmount);
-            
-            alert("Transaction submitted! Waiting for confirmation...");
-            const receipt = await tx.wait();
+  <div id="status" role="status" aria-live="polite">Ready to Connect</div>
 
-            const response = await fetch(`${BACKEND_URL}/api/verify-usdc-order`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    email,
-                    polygonAddress,
-                    pzzcAmount: amount,
-                    paymentCrypto: "USDC",
-                    txHash: receipt.hash
-                })
-            });
+  <div class="footer-text">
+    Return and purchase as much as you like as often as you like!
+    <br><br>
+    <strong>Thank you, Pizza Coin 💵🍕😃</strong>
+  </div>
+</form>
 
-            const data = await response.json();
-            if (data.success) {
-                alert("Payment successful! PZZC tokens have been sent to your wallet.");
-            } else {
-                alert("Error processing order: " + (data.error || "Unknown error"));
-            }
-        } catch (err) {
-            console.error(err);
-            alert("Payment failed: " + (err.reason || err.message));
-        }
+<script type="module">
+import { ethers } from "https://esm.sh/ethers@6.7.0";
+
+const POLYGON_CHAIN_ID = 137n;
+const POLYGON_CHAIN_HEX = "0x89";
+const USDC_ADDRESS = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174";
+const MERCHANT_WALLET = "0x6D83D832d1553FE7a3A210ed2ED2eb1668DD3046";
+const BACKEND_URL = "https://pizza-backend-8if7.onrender.com/api/verify-usdc-order";
+
+const ERC20_ABI = ["function transfer(address to, uint256 value) public returns (bool)"];
+
+const purchaseForm = document.getElementById("purchaseForm");
+const payButton = document.getElementById("payButton");
+const statusDiv = document.getElementById("status");
+
+function setStatus(message, className = "") {
+  statusDiv.className = className;
+  statusDiv.innerHTML = message;
+}
+
+function isValidPolygonAddress(address) {
+  return ethers.isAddress(address);
+}
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function isValidPurchaseAmount(amount) {
+  const numericAmount = Number(amount);
+  return Number.isFinite(numericAmount) && numericAmount >= 0.001;
+}
+
+async function ensurePolygon(provider) {
+  const network = await provider.getNetwork();
+  if (network.chainId === POLYGON_CHAIN_ID) {
+    return true;
+  }
+  setStatus("Switching wallet to Polygon...", "info");
+  try {
+    await window.ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: POLYGON_CHAIN_HEX }]
+    });
+  } catch (switchError) {
+    console.error("Polygon network switch failed:", switchError);
+    setStatus("Please switch your wallet to Polygon and try again.", "error");
+    return false;
+  }
+  const updatedNetwork = await provider.getNetwork();
+  if (updatedNetwork.chainId !== POLYGON_CHAIN_ID) {
+    setStatus("Wallet is not connected to Polygon.", "error");
+    return false;
+  }
+  return true;
+}
+
+purchaseForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const email = document.getElementById("email").value.trim();
+    const polyAddr = document.getElementById("polygonAddress").value.trim();
+    const cryptoSelect = document.getElementById("cryptoSelect").value;
+    const amount = document.getElementById("pzzcAmount").value.trim();
+
+    if (!isValidEmail(email)) {
+      setStatus("Please enter a valid email address.", "error");
+      document.getElementById("email").focus();
+      return;
     }
 
-    async function payWithNowPayments() {
-        const email = document.getElementById("buyerEmail").value.trim();
-        const polygonAddress = document.getElementById("polygonAddress").value.trim();
-        const amount = document.getElementById("pzzcAmount").value.trim();
-
-        if (!email || !polygonAddress || !amount) {
-            alert("Please fill in all fields.");
-            return;
-        }
-
-        alert("Redirecting to NOWPayments secure checkout...");
-        
-        // Example redirect using standard GET query parameters to a backend invoice generator route
-        window.location.href = `${BACKEND_URL}/api/create-invoice?amount=${amount}&email=${encodeURIComponent(email)}&wallet=${encodeURIComponent(polygonAddress)}`;
+    if (!isValidPolygonAddress(polyAddr)) {
+      setStatus("Please enter a valid Polygon wallet address.", "error");
+      document.getElementById("polygonAddress").focus();
+      return;
     }
+
+    if (!isValidPurchaseAmount(amount)) {
+      setStatus("Purchase amount must be at least 0.001.", "error");
+      document.getElementById("pzzcAmount").focus();
+      return;
+    }
+
+    if (cryptoSelect !== "USDC") {
+      setStatus("This checkout currently supports USDC (Polygon) only. Please select USDC.", "warning");
+      document.getElementById("cryptoSelect").value = "USDC";
+      return;
+    }
+
+    let web3ProviderSource = window.ethereum;
+    if (!web3ProviderSource && window.coinbaseWalletExtension) {
+      web3ProviderSource = window.coinbaseWalletExtension;
+    }
+
+    if (!web3ProviderSource) {
+      setStatus("No Web3 wallet detected. Please open in MetaMask or a Web3 browser extension.", "error");
+      return;
+    }
+
+    payButton.disabled = true;
+    payButton.textContent = "Processing...";
+
+    try {
+      setStatus("Requesting wallet connection...", "info");
+      const provider = new ethers.BrowserProvider(web3ProviderSource);
+      await provider.send("eth_requestAccounts", []);
+
+      const polygonReady = await ensurePolygon(provider);
+      if (!polygonReady) return;
+
+      const signer = await provider.getSigner();
+      const usdcContract = new ethers.Contract(USDC_ADDRESS, ERC20_ABI, signer);
+      const parsedAmount = ethers.parseUnits(amount, 6);
+
+      setStatus(`Preparing payment...<br>Amount: ${amount} USDC`, "info");
+
+      const tx = await usdcContract.transfer(MERCHANT_WALLET, parsedAmount);
+      setStatus(`Transaction broadcasted. Waiting for Polygon confirmation...<br><small>${tx.hash}</small>`, "info");
+
+      const receipt = await tx.wait();
+      if (!receipt || receipt.status !== 1) {
+        throw new Error("The USDC transaction was not successfully confirmed.");
+      }
+
+      setStatus(`✅ USDC Payment Confirmed! Verifying with server...<br><small>${tx.hash}</small>`, "success");
+
+      const response = await fetch(BACKEND_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          polygonAddress: polyAddr,
+          pzzcAmount: amount,
+          paymentCrypto: cryptoSelect,
+          txHash: tx.hash
+        })
+      });
+
+      const backendData = await response.json();
+      if (!response.ok || !backendData.success) {
+        throw new Error(backendData.error || "Backend verification failed.");
+      }
+
+      setStatus(`✅ Success! PZZC distributed and confirmation emails sent.<br><small>TX: ${tx.hash}</small>`, "success");
+
+    } catch (err) {
+      console.error("Purchase error:", err);
+      let message = "Transaction cancelled or failed.";
+      if (err && err.code === "ACTION_REJECTED") {
+        message = "Transaction was rejected in your wallet.";
+      } else if (err && err.message) {
+        message = err.message;
+      }
+      setStatus(`❌ ${message}`, "error");
+    } finally {
+      payButton.disabled = false;
+      payButton.textContent = "Complete Purchase";
+    }
+});
+
+setStatus("Ready to Connect", "");
 </script>
-
 </body>
 </html>
