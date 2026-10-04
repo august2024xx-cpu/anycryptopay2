@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -128,53 +127,50 @@
   .error { color: #ff4444; font-weight: bold; }
   .warning { color: #ffcc00; font-weight: bold; }
   .info { color: #66ccff; font-weight: bold; }
-  .footer-text { text-align: center; margin-top: 24px; font-size: 18px; color: #bbb; font-style: italic; }
-  
-  /* FLOATING EMOJIS */
-  .emoji-zone {
-    position: fixed; top: 0; bottom: 0; width: 13vw; min-width: 75px; max-width: 190px;
-    pointer-events: none; z-index: 1; overflow: hidden;
-  }
-  .emoji-zone.left { left: 0; }
-  .emoji-zone.right { right: 0; }
-  .floating-emoji {
-    position: absolute; display: block; user-select: none; pointer-events: none;
-    will-change: transform; filter: drop-shadow(0 0 4px rgba(57, 255, 20, .35));
-  }
-  .left .emoji-1 { font-size: 70px; left: 8%; top: 10%; animation: bounceLeft1 6.5s ease-in-out infinite alternate; }
-  .left .emoji-2 { font-size: 42px; left: 52%; top: 27%; animation: bounceLeft2 4.7s ease-in-out infinite alternate; }
-  .left .emoji-3 { font-size: 92px; left: 12%; top: 47%; animation: bounceLeft3 7.2s ease-in-out infinite alternate; }
-  .left .emoji-4 { font-size: 54px; left: 55%; top: 67%; animation: bounceLeft4 5.4s ease-in-out infinite alternate; }
-  .left .emoji-5 { font-size: 32px; left: 20%; top: 84%; animation: bounceLeft5 3.9s ease-in-out infinite alternate; }
-  .right .emoji-1 { font-size: 48px; right: 10%; top: 8%; animation: bounceRight1 5.2s ease-in-out infinite alternate; }
-  .right .emoji-2 { font-size: 88px; right: 45%; top: 23%; animation: bounceRight2 7s ease-in-out infinite alternate; }
-  .right .emoji-3 { font-size: 38px; right: 12%; top: 43%; animation: bounceRight3 4.2s ease-in-out infinite alternate; }
-  .right .emoji-4 { font-size: 68px; right: 48%; top: 61%; animation: bounceRight4 6.1s ease-in-out infinite alternate; }
-  .right .emoji-5 { font-size: 30px; right: 18%; top: 82%; animation: bounceRight5 3.7s ease-in-out infinite alternate; }
+  .footer-text { text-align: center; margin-top: 24px; font-size: 18px; color: #bbb; font-style: italic; }/* FLOATING EMOJIS */
+.emoji-zone {
+position: fixed; top: 0; bottom: 0; width: 13vw; min-width: 75px; max-width: 190px;
+pointer-events: none; z-index: 1; overflow: hidden;
+}
+.emoji-zone.left { left: 0; }
+.emoji-zone.right { right: 0; }
+.floating-emoji {
+position: absolute; display: block; user-select: none; pointer-events: none;
+will-change: transform; filter: drop-shadow(0 0 4px rgba(57, 255, 20, .35));
+}
+.left .emoji-1 { font-size: 70px; left: 8%; top: 10%; animation: bounceLeft1 6.5s ease-in-out infinite alternate; }
+.left .emoji-2 { font-size: 42px; left: 52%; top: 27%; animation: bounceLeft2 4.7s ease-in-out infinite alternate; }
+.left .emoji-3 { font-size: 92px; left: 12%; top: 47%; animation: bounceLeft3 7.2s ease-in-out infinite alternate; }
+.left .emoji-4 { font-size: 54px; left: 55%; top: 67%; animation: bounceLeft4 5.4s ease-in-out infinite alternate; }
+.left .emoji-5 { font-size: 32px; left: 20%; top: 84%; animation: bounceLeft5 3.9s ease-in-out infinite alternate; }
+.right .emoji-1 { font-size: 48px; right: 10%; top: 8%; animation: bounceRight1 5.2s ease-in-out infinite alternate; }
+.right .emoji-2 { font-size: 88px; right: 45%; top: 23%; animation: bounceRight2 7s ease-in-out infinite alternate; }
+.right .emoji-3 { font-size: 38px; right: 12%; top: 43%; animation: bounceRight3 4.2s ease-in-out infinite alternate; }
+.right .emoji-4 { font-size: 68px; right: 48%; top: 61%; animation: bounceRight4 6.1s ease-in-out infinite alternate; }
+.right .emoji-5 { font-size: 30px; right: 18%; top: 82%; animation: bounceRight5 3.7s ease-in-out infinite alternate; }
 
-  @keyframes bounceLeft1 { 0% { transform: translate(0, 0) rotate(-12deg); } 100% { transform: translate(15px, 285px) rotate(-15deg); } }
-  @keyframes bounceLeft2 { 0% { transform: translate(0, 0) rotate(10deg); } 100% { transform: translate(-20px, 205px) rotate(-10deg); } }
-  @keyframes bounceLeft3 { 0% { transform: translate(0, 0) rotate(8deg); } 100% { transform: translate(5px, -235px) rotate(15deg); } }
-  @keyframes bounceLeft4 { 0% { transform: translate(0, 0) rotate(-8deg); } 100% { transform: translate(-10px, 175px) rotate(10deg); } }
-  @keyframes bounceLeft5 { 0% { transform: translate(0, 0); } 100% { transform: translate(-20px, -110px) rotate(-15deg); } }
-  @keyframes bounceRight1 { 0% { transform: translate(0, 0) rotate(12deg); } 100% { transform: translate(-15px, 275px) rotate(12deg); } }
-  @keyframes bounceRight2 { 0% { transform: translate(0, 0) rotate(-10deg); } 100% { transform: translate(20px, 210px) rotate(15deg); } }
-  @keyframes bounceRight3 { 0% { transform: translate(0, 0) rotate(8deg); } 100% { transform: translate(10px, -225px) rotate(18deg); } }
-  @keyframes bounceRight4 { 0% { transform: translate(0, 0) rotate(-12deg); } 100% { transform: translate(15px, 180px) rotate(10deg); } }
-  @keyframes bounceRight5 { 0% { transform: translate(0, 0); } 100% { transform: translate(20px, -115px) rotate(15deg); } }
+@keyframes bounceLeft1 { 0% { transform: translate(0, 0) rotate(-12deg); } 100% { transform: translate(15px, 285px) rotate(-15deg); } }
+@keyframes bounceLeft2 { 0% { transform: translate(0, 0) rotate(10deg); } 100% { transform: translate(-20px, 205px) rotate(-10deg); } }
+@keyframes bounceLeft3 { 0% { transform: translate(0, 0) rotate(8deg); } 100% { transform: translate(5px, -235px) rotate(15deg); } }
+@keyframes bounceLeft4 { 0% { transform: translate(0, 0) rotate(-8deg); } 100% { transform: translate(-10px, 175px) rotate(10deg); } }
+@keyframes bounceLeft5 { 0% { transform: translate(0, 0); } 100% { transform: translate(-20px, -110px) rotate(-15deg); } }
+@keyframes bounceRight1 { 0% { transform: translate(0, 0) rotate(12deg); } 100% { transform: translate(-15px, 275px) rotate(12deg); } }
+@keyframes bounceRight2 { 0% { transform: translate(0, 0) rotate(-10deg); } 100% { transform: translate(20px, 210px) rotate(15deg); } }
+@keyframes bounceRight3 { 0% { transform: translate(0, 0) rotate(8deg); } 100% { transform: translate(10px, -225px) rotate(18deg); } }
+@keyframes bounceRight4 { 0% { transform: translate(0, 0) rotate(-12deg); } 100% { transform: translate(15px, 180px) rotate(10deg); } }
+@keyframes bounceRight5 { 0% { transform: translate(0, 0); } 100% { transform: translate(20px, -115px) rotate(15deg); } }
 
-  @media (max-width: 900px) {    .emoji-zone { width: 8vw; min-width: 45px; opacity: .55; }  }
-  @media (max-width: 700px) {
-    body { padding: 8px; }
-    .container { width: 84%; max-width: none; padding: 22px 18px 30px; }
-    input, select { min-height: 96px; padding: 18px 20px; font-size: 32px; }
-    label { font-size: 22px; }
-  }
+@media (max-width: 900px) {    .emoji-zone { width: 8vw; min-width: 45px; opacity: .55; }  }
+@media (max-width: 700px) {
+body { padding: 8px; }
+.container { width: 84%; max-width: none; padding: 22px 18px 30px; }
+input, select { min-height: 96px; padding: 18px 20px; font-size: 32px; }
+label { font-size: 22px; }
+}
 </style>
-</head>
-<body>
 
-<div class="emoji-zone left" aria-hidden="true">
+</head>
+<body><div class="emoji-zone left" aria-hidden="true">
   <span class="floating-emoji emoji-1">🍕</span> 
   <span class="floating-emoji emoji-2">😃</span> 
   <span class="floating-emoji emoji-3">💵</span> 
@@ -187,65 +183,59 @@
   <span class="floating-emoji emoji-3">🪙</span> 
   <span class="floating-emoji emoji-4">😃</span> 
   <span class="floating-emoji emoji-5">💵</span>
-</div>
-
-<form class="container" id="purchaseForm" novalidate>
-  <h1>🍕 PIZZA COIN PAY WITH CRYPTO 🍕</h1>
-  
-  <div class="form-group">
+</div><form class="container" id="purchaseForm" novalidate>
+  <h1>🍕 PIZZA COIN PAY WITH CRYPTO 🍕</h1>  <div class="form-group">
     <label for="email">1. Enter Email</label>
     <input type="email" id="email" name="email" placeholder="buyer@example.com" autocomplete="email" inputmode="email" required>
-  </div>
+  </div>  <div class="form-group">
+    <label for="polygonAddress">2. MANDATORY: Enter Your Polygon Wallet Address</label>
+    <input type="text" id="polygonAddress" name="polygonAddress" placeholder="0x..." autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" required><div style="margin-top:12px; font-size:22px; line-height:1.5; text-align:center;">
+  <strong>Don't have a wallet?</strong><br>
+  <a href="PASTE-YOUR-FREE-WALLET-LINK-HERE"
+     target="_blank"
+     rel="noopener noreferrer"
+     style="color:#39ff14; font-weight:bold;">
+    CLICK HERE — GET A WALLET 100% FREE
+  </a>
+</div>
 
-  <div class="form-group">
-    <label for="polygonAddress">2. Enter Your Polygon Receive Address</label>
-    <input type="text" id="polygonAddress" name="polygonAddress" placeholder="0x..." autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" required>
-  </div>
-
-  <div class="form-group">
+  </div>  <div class="form-group">
     <label for="cryptoSelect">3. Select Payment Crypto on Polygon</label>
     <select id="cryptoSelect" name="cryptoSelect" autocomplete="off" required>
       <option value="USDC">USDC (Polygon)</option>
       <option value="USDT">USDT (Polygon)</option>
       <option value="MATIC">MATIC (Polygon)</option>
     </select>
-  </div>
-
-  <div class="form-group">
+  </div>  <div class="form-group">
     <label for="preset-select">Select Tiered Amount:</label>
     <select id="preset-select" name="preset-select">
       <option value="" disabled selected>-- Choose an amount --</option>
     </select>
-  </div>
-
-  <div class="divider">OR TYPE CUSTOM AMOUNT</div>
-
-  <div class="form-group">
+  </div>  <div class="divider">OR TYPE CUSTOM AMOUNT</div>  <div class="form-group">
     <label for="pzzcAmount">Purchase Amount (PZZC = 1:1 USDC Value)</label>
     <input type="number" id="pzzcAmount" name="pzzcAmount" placeholder="e.g. 200.00" min="1" step="0.01" autocomplete="off" inputmode="decimal">
-  </div>
+  </div>  <div class="form-group">
+    <label for="termsCheckbox" style="font-size:22px; line-height:1.5; display:flex; align-items:center;">
+      <input type="checkbox"
+             id="termsCheckbox"
+             name="termsCheckbox"
+             required
+             style="width:28px; height:28px; min-height:0; padding:0; margin:0 12px 0 0; flex-shrink:0;">
+      <span>I agree to the Terms and Conditions</span>
+    </label>
+  </div><button type="submit" id="payButton">Complete Purchase (Direct Web3)</button>
 
-  <button type="submit" id="payButton">Complete Purchase (Direct Web3)</button>
-
-  <div class="divider">--- NOWPAYMENTS GATEWAY ---</div>
-
-  <div class="nowpayments-container">
+  <div class="divider">--- NOWPAYMENTS GATEWAY ---</div>  <div class="nowpayments-container">
     <button type="button" id="nowpayments-btn" class="nowpayments-btn" onclick="payWithNowPayments()">
       <span>PAY WITH BTC OR ANY CRYPTO &nbsp;</span>
       <img src="https://nowpayments.io/images/embeds/payments-button-black.svg" alt="Crypto payment button by NOWPayments">
     </button>
-  </div>
-
-  <div id="status" role="status" aria-live="polite">Ready to Connect</div>
-
-  <div class="footer-text">
+  </div>  <div id="status" role="status" aria-live="polite">Ready to Connect</div>  <div class="footer-text">
     Return and purchase as much as you like as often as you like!
     <br><br>
     <strong>Thank you, Pizza Coin 💵🍕😃</strong>
   </div>
-</form>
-
-<script type="module">
+</form><script type="module">
 import { ethers } from "https://esm.sh/ethers@6.7.0";
 
 const POLYGON_CHAIN_ID = 137n;
@@ -264,6 +254,7 @@ const ERC20_ABI = [
 const purchaseForm = document.getElementById("purchaseForm");
 const payButton = document.getElementById("payButton");
 const statusDiv = document.getElementById("status");
+const termsCheckbox = document.getElementById("termsCheckbox");
 
 // Build tiered dropdown options on load
 window.addEventListener('DOMContentLoaded', () => {
@@ -348,6 +339,12 @@ window.payWithNowPayments = async function() {
     const polygonAddress = document.getElementById("polygonAddress").value.trim();
     const pzzcAmount = getFinalAmount();
 
+    if (!termsCheckbox.checked) {
+        setStatus("You must agree to the Terms and Conditions before proceeding.", "error");
+        termsCheckbox.focus();
+        return;
+    }
+
     if (!isValidEmail(email)) {
         setStatus("Please enter a valid email address first.", "error");
         return;
@@ -386,6 +383,12 @@ window.payWithNowPayments = async function() {
 // Direct Web3 Purchase Handler
 purchaseForm.addEventListener("submit", async (e) => {
   e.preventDefault();
+
+  if (!termsCheckbox.checked) {
+    setStatus("You must agree to the Terms and Conditions before proceeding.", "error");
+    termsCheckbox.focus();
+    return;
+  }
   
   const email = document.getElementById("email").value.trim();
   const polygonAddress = document.getElementById("polygonAddress").value.trim();
@@ -471,6 +474,5 @@ purchaseForm.addEventListener("submit", async (e) => {
     payButton.disabled = false;
   }
 });
-</script>
-</body>
+</script></body>
 </html>
